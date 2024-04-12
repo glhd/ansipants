@@ -24,7 +24,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Glhd\\Ansipants\\": "src/"
+      "Glhd\\AnsiPants\\": "src/"
     }
   },
   "autoload-dev": {
@@ -32,7 +32,7 @@
       "tests/TestCase.php"
     ],
     "psr-4": {
-      "Glhd\\Ansipants\\Tests\\": "tests/"
+      "Glhd\\AnsiPants\\Tests\\": "tests/"
     }
   },
   "scripts": {
@@ -42,7 +42,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Glhd\\Ansipants\\Support\\AnsipantsServiceProvider"
+          "AnsiPantsServiceProvider"
       ]
     }
   },

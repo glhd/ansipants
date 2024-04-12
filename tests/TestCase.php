@@ -1,8 +1,8 @@
 <?php
 
-namespace Glhd\Ansipants\Tests;
+namespace Glhd\AnsiPants\Tests;
 
-use Glhd\Ansipants\Support\AnsipantsServiceProvider;
+use Glhd\AnsiPants\Support\AnsiPantsServiceProvider;
 use Illuminate\Container\Container;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -11,7 +11,7 @@ abstract class TestCase extends Orchestra
 	protected function getPackageProviders($app)
 	{
 		return [
-			AnsipantsServiceProvider::class,
+			AnsiPantsServiceProvider::class,
 		];
 	}
 	
