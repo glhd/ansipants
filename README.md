@@ -37,6 +37,13 @@
 
 ## Usage
 
+```php
+ansi("\e[1mHello💥 \e[3mwo\e[0mrld")
+  ->append(" 🥸🥸🥸")
+  ->padLeft(100)
+  ->wordWrap();
+```
+
 ## Resources
 
 - https://notes.burke.libbey.me/ansi-escape-codes/
