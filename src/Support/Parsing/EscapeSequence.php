@@ -2,11 +2,13 @@
 
 namespace Glhd\AnsiPants\Support\Parsing;
 
+use Glhd\AnsiPants\Flag;
+
 class EscapeSequence implements Token
 {
 	public ?int $bits = null;
 	
-	public int $flag;
+	public Flag $flag;
 	
 	public array $args = [];
 	
@@ -22,7 +24,7 @@ class EscapeSequence implements Token
 		
 		$args = array_map('intval', explode(';', $matches[1]));
 		
-		$this->flag = array_shift($args);
+		$this->flag = Flag::from(array_shift($args));
 		$this->args = $args;
 		
 		if (

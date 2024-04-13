@@ -5,12 +5,14 @@ namespace Glhd\AnsiPants;
 class AnsiChar
 {
 	public function __construct(
-		public string $char,
-		public bool $bold,
-		public bool $italic,
-		public bool $underline,
-		public ?string $foreground,
-		public ?string $background,
+		public string $value,
+		/** @var \Glhd\AnsiPants\Flag[] */
+		public array $flags,
 	) {
+	}
+	
+	public function hasFlag(Flag $flag): bool
+	{
+		return in_array($flag, $this->flags, true);
 	}
 }
