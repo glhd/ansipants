@@ -31,7 +31,7 @@
     </a>
 </div>
 
-# ansipants
+# AnsiPants 👖💫
 
 ## Installation
 
