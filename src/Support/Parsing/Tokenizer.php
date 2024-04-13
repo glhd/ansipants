@@ -3,8 +3,10 @@
 namespace Glhd\AnsiPants\Support\Parsing;
 
 use Generator;
+use IteratorAggregate;
+use Traversable;
 
-class Tokenizer
+class Tokenizer implements IteratorAggregate
 {
 	public static function make(string $input): static
 	{
@@ -16,7 +18,7 @@ class Tokenizer
 	) {
 	}
 	
-	public function parse(): Generator
+	public function getIterator(): Generator
 	{
 		$buffer = '';
 		$chars = preg_split('//u', $this->input, -1, PREG_SPLIT_NO_EMPTY);

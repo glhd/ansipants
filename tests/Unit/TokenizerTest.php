@@ -31,7 +31,7 @@ class TokenizerTest extends TestCase
 			new Text('😎'),
 		];
 		
-		$this->assertParsedTo($expected, $parser->parse());
+		$this->assertParsedTo($expected, $parser);
 	}
 	
 	protected function assertParsedTo(array $expected, iterable $parsed): void

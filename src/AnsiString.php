@@ -82,7 +82,7 @@ class AnsiString implements Stringable
 		$active_flags = collect();
 		$chars = collect();
 		
-		foreach (Tokenizer::make($input)->parse() as $token) {
+		foreach (Tokenizer::make($input) as $token) {
 			if ($token instanceof EscapeSequence) {
 				$active_flags = $active_flags
 					->reject(fn(Flag $flag) => $token->flag->overrides($flag))
