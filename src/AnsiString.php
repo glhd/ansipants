@@ -19,19 +19,6 @@ class AnsiString implements Stringable
 		$this->chars = $this->parse($input);
 	}
 	
-	// public function wordWrap($characters = 75, $break = "\n", $cutLongWords = false)
-	// {
-	// 	$chars = [];
-	// 	$buffer = '';
-	//	
-	// 	foreach ($this->chars as $index => $char) {
-	// 		$current = $char->value;
-	// 		$next = $this->chars[$index + 1]->value ?? '';
-	//		
-	// 		$buffer .= $current;
-	// 	}
-	// }
-	
 	public function __toString(): string
 	{
 		$result = '';
