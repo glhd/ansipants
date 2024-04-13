@@ -6,7 +6,6 @@ use Glhd\AnsiPants\Support\Parsing\EscapeSequence;
 use Glhd\AnsiPants\Support\Parsing\Text;
 use Glhd\AnsiPants\Support\Parsing\Tokenizer;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Stringable;
 
 class AnsiString implements Stringable
