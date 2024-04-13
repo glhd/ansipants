@@ -4,7 +4,6 @@ namespace Glhd\AnsiPants\Support\Parsing;
 
 use Generator;
 use IteratorAggregate;
-use Traversable;
 
 class Tokenizer implements IteratorAggregate
 {
@@ -31,7 +30,7 @@ class Tokenizer implements IteratorAggregate
 				continue;
 			}
 			
-			yield match($type) {
+			yield match ($type) {
 				BufferType::EscapeSequence => new EscapeSequence($buffer),
 				BufferType::Text => new Text($buffer),
 			};

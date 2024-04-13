@@ -3,9 +3,9 @@
 namespace Glhd\AnsiPants\Tests\Unit;
 
 use Glhd\AnsiPants\Support\Parsing\EscapeSequence;
-use Glhd\AnsiPants\Support\Parsing\Tokenizer;
 use Glhd\AnsiPants\Support\Parsing\Text;
 use Glhd\AnsiPants\Support\Parsing\Token;
+use Glhd\AnsiPants\Support\Parsing\Tokenizer;
 use Glhd\AnsiPants\Tests\TestCase;
 
 class TokenizerTest extends TestCase

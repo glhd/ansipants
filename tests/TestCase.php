@@ -3,7 +3,6 @@
 namespace Glhd\AnsiPants\Tests;
 
 use Glhd\AnsiPants\Support\AnsiPantsServiceProvider;
-use Illuminate\Container\Container;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
