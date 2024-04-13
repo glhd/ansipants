@@ -13,6 +13,11 @@ class AnsiString implements Stringable
 	/** @var \Illuminate\Support\Collection<int,\Glhd\AnsiPants\AnsiChar> */
 	protected Collection $chars;
 	
+	public static function make(AnsiString|Collection|string $input): static
+	{
+		return new static($input);
+	}
+	
 	public function __construct(AnsiString|Collection|string $input)
 	{
 		if ($input instanceof Collection) {
@@ -23,6 +28,11 @@ class AnsiString implements Stringable
 		} else {
 			$this->chars = $this->parse($input);
 		}
+	}
+	
+	public function withFlags(Flag ...$flags): static
+	{
+		return new static($this->chars->map(fn(AnsiChar $char) => $char->withFlags(...$flags)));
 	}
 	
 	public function prepend(AnsiString|string $string): static
@@ -43,31 +53,34 @@ class AnsiString implements Stringable
 	{
 		$short = max(0, $length - $this->length());
 		
-		// FIXME: We need to grab the flags from the first char and apply unless $pad is already ANSI
+		$padding = static::make(mb_substr(str_repeat($pad, $short), 0, $short))
+			->withFlags(...$this->chars->first()->flags);
 		
-		return $this->prepend(mb_substr(str_repeat($pad, $short), 0, $short));
+		return $this->prepend($padding);
 	}
 	
 	public function padRight(int $length, AnsiString|string $pad = ' '): static
 	{
 		$short = max(0, $length - $this->length());
 		
-		// FIXME: We need to grab the flags from the last char and apply unless $pad is already ANSI
+		$padding = static::make(mb_substr(str_repeat($pad, $short), 0, $short))
+			->withFlags(...$this->chars->last()->flags);
 		
-		return $this->append(mb_substr(str_repeat($pad, $short), 0, $short));
+		return $this->append($padding);
 	}
 	
 	public function padBoth(int $length, AnsiString|string $pad = ' '): static
 	{
 		$short = max(0, $length - $this->length());
-		$left = floor($short / 2);
-		$right = ceil($short / 2);
+		$left_padding = static::make(mb_substr(str_repeat($pad, floor($short / 2)), 0, $short))
+			->withFlags(...$this->chars->first()->flags);
 		
-		// FIXME: We need to grab the flags from the first + last char and apply unless $pad is already ANSI
+		$right_padding = static::make(mb_substr(str_repeat($pad, ceil($short / 2)), 0, $short))
+			->withFlags(...$this->chars->last()->flags);
 		
 		return $this
-			->prepend(mb_substr(str_repeat($pad, $left), 0, $short))
-			->append(mb_substr(str_repeat($pad, $right), 0, $short));
+			->prepend($left_padding)
+			->append($right_padding);
 	}
 	
 	public function length(): int
