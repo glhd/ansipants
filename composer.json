@@ -13,7 +13,7 @@
   "type": "library",
   "license": "MIT",
   "require": {
-    "illuminate/support": "^10|^11|dev-master",
+    "illuminate/support": "^10.17|^11|dev-master",
     "ext-json": "*"
   },
   "require-dev": {
