@@ -2,7 +2,7 @@
 
 namespace Glhd\AnsiPants;
 
-use Glhd\AnsiPants\Support\AnsiParser;
+use Glhd\AnsiPants\Support\Parsing\Tokenizer;
 use Stringable;
 
 class AnsiString implements Stringable
@@ -13,12 +13,13 @@ class AnsiString implements Stringable
 	
 	public function __construct(string $input)
 	{
-		$parser = new AnsiParser($input);
+		$parser = new Tokenizer($input);
 		[$this->chars, $this->flags] = $parser->parse();
 	}
 	
 	public function __toString(): string
 	{
+		
 		// TODO: Implement __toString() method.
 	}
 }

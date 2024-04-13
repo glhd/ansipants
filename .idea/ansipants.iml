@@ -121,8 +121,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/league/flysystem" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/carbonphp/carbon-doctrine-types" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/fruitcake/php-cors" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/uri-template" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/prompts" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/tinker" />
@@ -133,10 +131,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/orchestra/workbench" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpstan/phpstan" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/clock" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-client" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psy/psysh" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/rector/rector" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/clock" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/mailer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php83" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-uuid" />
