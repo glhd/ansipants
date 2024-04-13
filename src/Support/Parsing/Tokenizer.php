@@ -6,6 +6,11 @@ use Generator;
 
 class Tokenizer
 {
+	public static function make(string $input): static
+	{
+		return new static($input);
+	}
+	
 	public function __construct(
 		protected string $input
 	) {

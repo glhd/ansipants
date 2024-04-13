@@ -13,8 +13,9 @@ class AnsiString implements Stringable
 	
 	public function __construct(string $input)
 	{
-		$parser = new Tokenizer($input);
-		[$this->chars, $this->flags] = $parser->parse();
+		foreach (Tokenizer::make($input)->parse() as $token) {
+			
+		}
 	}
 	
 	public function __toString(): string
