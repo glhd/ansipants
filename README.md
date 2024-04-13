@@ -7,7 +7,7 @@
 	</a>
 	<a href="https://codeclimate.com/github/glhd/ansipants/test_coverage" target="_blank">
 		<img 
-			src="https://api.codeclimate.com/v1/badges/change-me/test_coverage" 
+			src="https://api.codeclimate.com/v1/badges/04761c68fd9dc46cf608/test_coverage" 
 			alt="Coverage Status" 
 		/>
 	</a>
@@ -36,3 +36,8 @@
 ## Installation
 
 ## Usage
+
+## Resources
+
+- https://notes.burke.libbey.me/ansi-escape-codes/
+- https://en.wikipedia.org/wiki/ANSI_escape_code
