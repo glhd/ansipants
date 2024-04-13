@@ -13,9 +13,66 @@ class AnsiString implements Stringable
 	/** @var \Illuminate\Support\Collection<int,\Glhd\AnsiPants\AnsiChar> */
 	protected Collection $chars;
 	
-	public function __construct(string $input)
+	public function __construct(AnsiString|Collection|string $input)
 	{
-		$this->chars = $this->parse($input);
+		if ($input instanceof Collection) {
+			$input->ensure(AnsiChar::class);
+			$this->chars = clone $input;
+		} elseif ($input instanceof AnsiString) {
+			$this->chars = clone $input->chars;
+		} else {
+			$this->chars = $this->parse($input);
+		}
+	}
+	
+	public function prepend(AnsiString|string $string): static
+	{
+		$string = new AnsiString($string);
+		
+		return new AnsiString($string->chars->merge($this->chars));
+	}
+	
+	public function append(AnsiString|string $string): static
+	{
+		$string = new AnsiString($string);
+		
+		return new AnsiString($this->chars->merge($string->chars));
+	}
+	
+	public function padLeft(int $length, AnsiString|string $pad = ' '): static
+	{
+		$short = max(0, $length - $this->length());
+		
+		// FIXME: We need to grab the flags from the first char and apply unless $pad is already ANSI
+		
+		return $this->prepend(mb_substr(str_repeat($pad, $short), 0, $short));
+	}
+	
+	public function padRight(int $length, AnsiString|string $pad = ' '): static
+	{
+		$short = max(0, $length - $this->length());
+		
+		// FIXME: We need to grab the flags from the last char and apply unless $pad is already ANSI
+		
+		return $this->append(mb_substr(str_repeat($pad, $short), 0, $short));
+	}
+	
+	public function padBoth(int $length, AnsiString|string $pad = ' '): static
+	{
+		$short = max(0, $length - $this->length());
+		$left = floor($short / 2);
+		$right = ceil($short / 2);
+		
+		// FIXME: We need to grab the flags from the first + last char and apply unless $pad is already ANSI
+		
+		return $this
+			->prepend(mb_substr(str_repeat($pad, $left), 0, $short))
+			->append(mb_substr(str_repeat($pad, $right), 0, $short));
+	}
+	
+	public function length(): int
+	{
+		return count($this->chars);
 	}
 	
 	public function __toString(): string
@@ -27,7 +84,7 @@ class AnsiString implements Stringable
 			[$remove, $add] = $this->diffFlags($active_flags, $char->flags);
 			
 			// If it's simpler, just reset and then add them all
-			if (count($remove) > count($char->flags)) {
+			if (count($remove) >= count($char->flags)) {
 				[$remove, $add] = [[Flag::Reset], $char->flags];
 			}
 			

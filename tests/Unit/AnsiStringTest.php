@@ -14,4 +14,20 @@ class AnsiStringTest extends TestCase
 		
 		$this->assertEquals($original, (string) $parsed);
 	}
+	
+	public function test_pad_left(): void
+	{
+		$parsed = new AnsiString("\e[1mHello \e[0mworld");
+		$expected = "\e[1m    Hello \e[0mworld";
+		
+		$this->assertEquals($expected, (string) $parsed->padLeft(15));
+	}
+	
+	public function test_pad_right(): void
+	{
+		$parsed = new AnsiString("\e[1mHello \e[0mworld");
+		$expected = "\e[1mHello \e[0mworld    ";
+		
+		$this->assertEquals($expected, (string) $parsed->padRight(15));
+	}
 }
