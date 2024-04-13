@@ -12,7 +12,7 @@ class TokenizerTest extends TestCase
 {
 	public function test_it_can_tokenize_ansi(): void
 	{
-		$parser = new Tokenizer("Hello \e[3mworld");
+		$parser = new Tokenizer("Hello \e[3mworld 😎");
 		
 		$expected = [
 			new Text('H'),
@@ -27,6 +27,8 @@ class TokenizerTest extends TestCase
 			new Text('r'),
 			new Text('l'),
 			new Text('d'),
+			new Text(' '),
+			new Text('😎'),
 		];
 		
 		$this->assertParsedTo($expected, $parser->parse());
