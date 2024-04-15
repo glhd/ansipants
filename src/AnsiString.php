@@ -2,6 +2,7 @@
 
 namespace Glhd\AnsiPants;
 
+use Generator;
 use Glhd\AnsiPants\Support\Parsing\EscapeSequence;
 use Glhd\AnsiPants\Support\Parsing\Text;
 use Glhd\AnsiPants\Support\Parsing\Tokenizer;
@@ -18,8 +19,12 @@ class AnsiString implements Stringable
 		return new static($input);
 	}
 	
-	public function __construct(AnsiString|Collection|string $input)
+	public function __construct(AnsiString|AnsiChar|Collection|string $input)
 	{
+		if ($input instanceof AnsiChar) {
+			$input = new Collection([$input]);
+		}
+		
 		if ($input instanceof Collection) {
 			$input->ensure(AnsiChar::class);
 			$this->chars = clone $input;
@@ -35,18 +40,14 @@ class AnsiString implements Stringable
 		return new static($this->chars->map(fn(AnsiChar $char) => $char->withFlags(...$flags)));
 	}
 	
-	public function prepend(AnsiString|string $string): static
+	public function prepend(AnsiString|AnsiChar|string $string): static
 	{
-		$string = new AnsiString($string);
-		
-		return new AnsiString($string->chars->merge($this->chars));
+		return new AnsiString(AnsiString::make($string)->chars->merge($this->chars));
 	}
 	
-	public function append(AnsiString|string $string): static
+	public function append(AnsiString|AnsiChar|string $string): static
 	{
-		$string = new AnsiString($string);
-		
-		return new AnsiString($this->chars->merge($string->chars));
+		return new AnsiString($this->chars->merge(AnsiString::make($string)->chars));
 	}
 	
 	public function padLeft(int $length, AnsiString|string $pad = ' '): static
@@ -81,6 +82,34 @@ class AnsiString implements Stringable
 		return $this
 			->prepend($left_padding)
 			->append($right_padding);
+	}
+	
+	public function wordwrap(int $width = 75, AnsiString|string $break = "\e[0m\n", bool $cut_long_words = false): static
+	{
+		$break = new AnsiString($break);
+		$buffer = new AnsiString('');
+		$wrapped = new AnsiString('');
+		
+		foreach ($this->words() as $word) {
+			[$sep, $word] = $word;
+			
+			if (($buffer->length() + $sep->length() + $word->length()) > $width) {
+				if ($wrapped->length()) {
+					$wrapped = $wrapped->append($break);
+				}
+				
+				$wrapped = $wrapped->append($buffer);
+				$buffer = new AnsiString($word);
+			} else {
+				$buffer = $buffer->append($sep)->append($word);
+			}
+		}
+		
+		if ($buffer->length() > 0) {
+			$wrapped = $wrapped->append($break)->append($buffer);
+		}
+		
+		return $wrapped;
 	}
 	
 	public function length(): int
@@ -123,6 +152,28 @@ class AnsiString implements Stringable
 		}
 		
 		return $result;
+	}
+	
+	/** @return Generator<static[]> */
+	protected function words(): Generator
+	{
+		$sep = new static('');
+		$word = new static('');
+		
+		foreach ($this->chars as $char) {
+			if ($word->length() > 0 && in_array($char->value, [' ', "\n"])) {
+				yield [$sep, $word];
+				$word = new static('');
+				$sep = new static($char);
+				continue;
+			}
+			
+			$word->chars->push($char);
+		}
+		
+		if ($word->length() > 0 || $sep->length() > 0) {
+			yield [$sep, $word];
+		}
 	}
 	
 	/** @return \Glhd\AnsiPants\Flag[][] */

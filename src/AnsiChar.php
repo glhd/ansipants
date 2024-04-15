@@ -2,12 +2,14 @@
 
 namespace Glhd\AnsiPants;
 
-class AnsiChar
+use Stringable;
+
+class AnsiChar implements Stringable
 {
 	public function __construct(
 		public string $value,
 		/** @var \Glhd\AnsiPants\Flag[] */
-		public array $flags,
+		public array $flags = [],
 	) {
 	}
 	
@@ -19,5 +21,10 @@ class AnsiChar
 	public function hasFlag(Flag $flag): bool
 	{
 		return in_array($flag, $this->flags, true);
+	}
+	
+	public function __toString(): string
+	{
+		return $this->value;
 	}
 }

@@ -38,4 +38,21 @@ class AnsiStringTest extends TestCase
 		
 		$this->assertEquals($expected, (string) $parsed->padBoth(15));
 	}
+	
+	public function test_word_wrap(): void
+	{
+		$input = "The \e[1mquick\e[0m \e[33mbrown fox \e[3mjumps\e[0m over the lazy dog";
+		
+		$expected = <<<EOF
+		The \e[1mquick\e[0m
+		\e[33mbrown fox\e[0m
+		\e[33m\e[3mjumps\e[0m over
+		the lazy
+		dog
+		EOF;
+
+		$parsed = new AnsiString($input);
+		
+		$this->assertEquals($expected, (string) $parsed->wordwrap(10));
+	}
 }
