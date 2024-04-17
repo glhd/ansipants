@@ -114,6 +114,23 @@ enum Flag: int
 		return null;
 	}
 	
+	/**
+	 * Determine whether the flag conveys style, or is just a reset of some sort
+	 * 
+	 * @return bool
+	 */
+	public function hasStyle(): bool
+	{
+		return ! in_array($this, [
+			self::Reset,
+			self::Normal,
+			self::NotItalic,
+			self::NotUnderline,
+			self::DefaultForeground,
+			self::DefaultBackground,
+		]);
+	}
+	
 	protected function pairs(): array
 	{
 		return [
