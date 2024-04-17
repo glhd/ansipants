@@ -7,7 +7,15 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [0.0.1] - 2024-04-17
 
-## [0.0.1]
+### Added
+
+- Added support for `length` (number of chars) and `width` (multibyte width of chars)
+- Added support for `prepend` and `append`
+- Added support for `startsWith` and `endsWith`
+- Added support for `padLeft`, `padRight`, and `padBoth`
+- Added support for `wordwrap`
+- Added support for `explode`
+- Added support for `is` (for comparing two ansi strings)
 
 # Keep a Changelog Syntax
 

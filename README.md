@@ -31,17 +31,29 @@
     </a>
 </div>
 
-# AnsiPants 👖💫
+# ANSI Pants 👖💫
 
 ## Installation
 
+```shell
+composer require glhd/ansipants
+```
+
 ## Usage
+
+You can instantiate a new ANSI string using the `ansi()` helper, with `new AnsiString()`,
+or with `AnsiString::make()`. All string manipulation functions can be chained, just like
+the Laravel `Stringable` class. Where appropriate, you can pass an additional `ignore_style: true`
+argument into a function to make that function ignore the ANSI styles that are applied
+(like color or font style).
+
+An example:
 
 ```php
 ansi("\e[1mHello💥 \e[3mwo\e[0mrld")
   ->append(" 🥸🥸🥸")
   ->padLeft(100)
-  ->wordWrap();
+  ->wordwrap();
 ```
 
 ## Resources
