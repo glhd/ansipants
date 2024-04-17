@@ -55,4 +55,37 @@ class AnsiStringTest extends TestCase
 		
 		$this->assertEquals($expected, (string) $parsed->wordwrap(10));
 	}
+
+	public function test_it_cuts_long_words_when_wrapping(): void
+	{
+		$input = "Cut long words";
+
+		$expected = <<<EOF
+		Cut
+		Lon
+		g w
+		ord
+		s
+		EOF;
+
+		$parsed = new AnsiString($input);
+
+		$this->assertEquals($expected, (string) $parsed->wordwrap(3, cut_long_words: true));
+	}
+
+	public function test_it_wraps_wide_characters(): void
+	{
+		$input = '🔥 🔥 あ あ';
+
+		$expected = <<<EOF
+		🔥
+		🔥
+		あ
+		あ
+		EOF;
+
+		$parsed = new AnsiString($input);
+
+		$this->assertEquals($expected, (string) $parsed->wordwrap(3));
+	}
 }
