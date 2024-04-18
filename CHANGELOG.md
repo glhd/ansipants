@@ -5,6 +5,16 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+### Added
+
+- Added support for `substr`
+- Added support for `cut_long_words: true` in wordwrap
+- Added `Stringable::ansi()` macro
+
+### Changes
+
+- Wordwrap now uses `width` rather than `length` for wrapping
+
 ## [0.0.1] - 2024-04-17
 
 ### Added

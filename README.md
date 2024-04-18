@@ -56,6 +56,16 @@ ansi("\e[1mHello💥 \e[3mwo\e[0mrld")
   ->wordwrap();
 ```
 
+### Stringable Macro
+
+You can also create an ANSI string from any `Stringable` object:
+
+```php
+Str::of("\e[1mHello💥 \e[3mwo\e[0mrld")->ansi();
+// Or
+str("\e[1mHello💥 \e[3mwo\e[0mrld")->ansi();
+```
+
 ## Resources
 
 - https://notes.burke.libbey.me/ansi-escape-codes/
