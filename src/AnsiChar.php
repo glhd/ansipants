@@ -6,11 +6,28 @@ use Stringable;
 
 class AnsiChar implements Stringable
 {
+	protected ?int $width = null;
+	
 	public function __construct(
 		public string $value,
 		/** @var \Glhd\AnsiPants\Flag[] */
 		public array $flags = [],
 	) {
+	}
+	
+	public function width(): int
+	{
+		return $this->width ??= mb_strwidth($this->value);
+	}
+	
+	public function is(AnsiChar $other, bool $ignore_style = false): bool
+	{
+		return $this->value === $other->value && ($ignore_style || $this->flags === $other->flags);
+	}
+	
+	public function isNot(AnsiChar $other, bool $ignore_style = false): bool
+	{
+		return $this->value !== $other->value || (! $ignore_style && $this->flags !== $other->flags);
 	}
 	
 	public function withFlags(Flag ...$flags): static

@@ -22,10 +22,8 @@ class AnsiString implements Stringable
 	public function __construct(AnsiString|AnsiChar|Collection|string $input)
 	{
 		if ($input instanceof AnsiChar) {
-			$input = new Collection([$input]);
-		}
-		
-		if ($input instanceof Collection) {
+			$this->chars = new Collection([clone $input]);
+		} elseif ($input instanceof Collection) {
 			$input->ensure(AnsiChar::class);
 			$this->chars = clone $input;
 		} elseif ($input instanceof AnsiString) {
@@ -37,17 +35,47 @@ class AnsiString implements Stringable
 	
 	public function withFlags(Flag ...$flags): static
 	{
-		return new static($this->chars->map(fn(AnsiChar $char) => $char->withFlags(...$flags)));
+		return new static($this->chars->map(fn(AnsiChar $char) => (clone $char)->withFlags(...$flags)));
 	}
 	
 	public function prepend(AnsiString|AnsiChar|string $string): static
 	{
-		return new AnsiString(AnsiString::make($string)->chars->merge($this->chars));
+		$prepended = collect();
+		
+		if ($string instanceof AnsiChar) {
+			$prepended->push(clone $string);
+		} else {
+			$string = new AnsiString($string);
+			foreach ($string->chars as $char) {
+				$prepended->push(clone $char);
+			}
+		}
+		
+		foreach ($this->chars as $char) {
+			$prepended->push(clone $char);
+		}
+		
+		return new AnsiString($prepended);
 	}
 	
 	public function append(AnsiString|AnsiChar|string $string): static
 	{
-		return new AnsiString($this->chars->merge(AnsiString::make($string)->chars));
+		$appended = collect();
+		
+		foreach ($this->chars as $char) {
+			$appended->push(clone $char);
+		}
+		
+		if ($string instanceof AnsiChar) {
+			$appended->push(clone $string);
+		} else {
+			$string = new AnsiString($string);
+			foreach ($string->chars as $char) {
+				$appended->push(clone $char);
+			}
+		}
+		
+		return new AnsiString($appended);
 	}
 	
 	public function padLeft(int $length, AnsiString|string $pad = ' '): static
@@ -112,9 +140,136 @@ class AnsiString implements Stringable
 		return $wrapped;
 	}
 	
+	/** @return Collection<int,\Glhd\AnsiPants\AnsiString> */
+	public function explode(AnsiString|string $break, bool $ignore_style = true): Collection
+	{
+		$break = new AnsiString($break);
+		$results = new Collection();
+		$buffer = new AnsiString('');
+		$tail_buffer = new AnsiString('');
+		
+		foreach ($this->chars as $char) {
+			$tail_buffer = $tail_buffer->append($char);
+			
+			// If our partial buffer is the break value, we'll push the current
+			// buffer to the results, and reset for the next chunk.
+			if ($tail_buffer->is($break, $ignore_style)) {
+				$results->push($buffer);
+				$buffer = new AnsiString('');
+				$tail_buffer = new AnsiString('');
+				continue;
+			}
+			
+			// If our partial buffer looks like it's the beginning of the break value
+			// then we'll just continue buffering
+			if ($break->startsWith($tail_buffer)) {
+				continue;
+			}
+			
+			// Otherwise (if the partial buffer isn't part of the break), just push it
+			// to the current buffer and reset our partial buffer
+			$buffer = $buffer->append($tail_buffer);
+			$tail_buffer = new AnsiString('');
+		}
+		
+		// If we have anything remaining on the partial buffer when we get to the
+		// end of the string, we just need to append it to our current buffer
+		if ($tail_buffer->length() > 0) {
+			$buffer = $buffer->append($tail_buffer);
+		}
+		
+		// And if there's anything remaining on the buffer once we're done, add
+		// that to the final results
+		if ($buffer->length() > 0) {
+			$results->push($buffer);
+		}
+		
+		return $results;
+	}
+	
+	public function is(AnsiString|string $other, bool $ignore_style = false): bool
+	{
+		$other = new AnsiString($other);
+		$length = $this->length();
+		
+		if ($other->length() !== $length || $other->width() !== $this->width()) {
+			return false;
+		}
+		
+		for ($i = 0; $i < $length; $i++) {
+			if ($this->chars[$i]->isNot($other->chars[$i], $ignore_style)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public function startsWith(AnsiString|string $needle, bool $ignore_style = false): bool
+	{
+		$needle = new AnsiString($needle);
+		
+		$index = 0;
+		$last_index = $needle->length() - 1;
+		
+		while ($index <= $last_index) {
+			if (
+				! isset($this->chars[$index])
+				|| $this->chars[$index]->isNot($needle->chars[$index], $ignore_style)
+			) {
+				return false;
+			}
+			
+			$index++;
+		}
+		
+		return true;
+	}
+	
+	public function endsWith(AnsiString|string $needle, bool $ignore_style = false): bool
+	{
+		$needle = new AnsiString($needle);
+		
+		$this_index = $this->length() - 1;
+		$needle_index = $needle->length() - 1;
+		
+		while ($needle_index >= 0) {
+			if (
+				! isset($this->chars[$this_index])
+				|| $this->chars[$this_index]->isNot($needle->chars[$needle_index], $ignore_style)
+			) {
+				return false;
+			}
+			
+			$this_index--;
+			$needle_index--;
+		}
+		
+		return true;
+	}
+	
 	public function length(): int
 	{
 		return count($this->chars);
+	}
+	
+	public function width(): int
+	{
+		return $this->chars->sum(fn(AnsiChar $char) => $char->width());
+	}
+	
+	public function dump(): static
+	{
+		dump($this);
+		
+		return $this;
+	}
+	
+	public function dd(): static
+	{
+		dd($this);
+		
+		return $this;
 	}
 	
 	public function __toString(): string
@@ -126,22 +281,23 @@ class AnsiString implements Stringable
 			[$remove, $add] = $this->diffFlags($active_flags, $char->flags);
 			
 			// If it's simpler, just reset and then add them all
-			if (count($remove) >= count($char->flags)) {
-				[$remove, $add] = [[Flag::Reset], $char->flags];
+			if (count($remove)) {
+				$result .= Flag::Reset->getEscapeSequence();
+				// [$remove, $add] = [[], $char->flags];
 			}
 			
-			foreach ($remove as $remove_flag) {
-				// First, check to see if any of the flags we're adding overrides the flag
-				// we're removing (in which case, we don't need to explicitly remove it).
-				foreach ($add as $add_flag) {
-					if ($add_flag->overrides($remove_flag)) {
-						break;
-					}
-				}
-				
-				// Otherwise, add the inverse sequence
-				$result .= $remove_flag->getInverseEscapeSequence();
-			}
+			// foreach ($remove as $remove_flag) {
+			// 	// First, check to see if any of the flags we're adding overrides the flag
+			// 	// we're removing (in which case, we don't need to explicitly remove it).
+			// 	foreach ($add as $add_flag) {
+			// 		if ($add_flag->overrides($remove_flag)) {
+			// 			break;
+			// 		}
+			// 	}
+			//	
+			// 	// Otherwise, add the inverse sequence
+			// 	$result .= $remove_flag->getInverseEscapeSequence();
+			// }
 			
 			foreach ($add as $add_flag) {
 				$result .= $add_flag->getEscapeSequence();
@@ -207,7 +363,7 @@ class AnsiString implements Stringable
 			if ($token instanceof EscapeSequence) {
 				$active_flags = $active_flags
 					->reject(fn(Flag $flag) => $token->flag->overrides($flag))
-					->push($token->flag);
+					->when($token->flag->hasStyle(), fn(Collection $active_flags) => $active_flags->push($token->flag));
 			}
 			
 			if ($token instanceof Text) {
