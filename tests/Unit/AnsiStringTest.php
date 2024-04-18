@@ -125,10 +125,10 @@ class AnsiStringTest extends TestCase
 		
 		$expected = <<<EOF
 		Cut
-		Lon
-		g w
-		ord
-		s
+		lon
+		g
+		wor
+		ds
 		EOF;
 		
 		$parsed = new AnsiString($input);
@@ -150,5 +150,16 @@ class AnsiStringTest extends TestCase
 		$parsed = new AnsiString($input);
 		
 		$this->assertEquals($expected, (string) $parsed->wordwrap(3));
+	}
+	
+	public function test_substr(): void
+	{
+		$string = new AnsiString("\e[33m😎😎😎 hello \e[1mworld");
+		
+		$this->assertEquals("\e[33m😎😎😎", (string) $string->substr(0, 3));
+		$this->assertEquals("\e[33m😎😎😎 hello \e[1mworld", (string) $string->substr(0, 15));
+		$this->assertEquals("\e[33m😎 hello \e[1mworld", (string) $string->substr(2, 99));
+		$this->assertEquals("\e[33m\e[1mwor", (string) $string->substr(10, 3));
+		$this->assertEquals("\e[33m\e[1mrld", (string) $string->substr(-3));
 	}
 }

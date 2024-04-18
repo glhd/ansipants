@@ -118,11 +118,11 @@ class AnsiString implements Stringable
 		$buffer = new AnsiString('');
 		$wrapped = new AnsiString('');
 		
-		foreach ($this->words() as $word) {
+		foreach ($this->words($cut_long_words ? $width : null) as $word) {
 			[$sep, $word] = $word;
 			
-			if (($buffer->length() + $sep->length() + $word->length()) > $width) {
-				if ($wrapped->length()) {
+			if (($buffer->width() + $sep->width() + $word->width()) > $width) {
+				if ($wrapped->width()) {
 					$wrapped = $wrapped->append($break);
 				}
 				
@@ -133,7 +133,7 @@ class AnsiString implements Stringable
 			}
 		}
 		
-		if ($buffer->length() > 0) {
+		if ($buffer->width() > 0) {
 			$wrapped = $wrapped->append($break)->append($buffer);
 		}
 		
@@ -185,6 +185,30 @@ class AnsiString implements Stringable
 		}
 		
 		return $results;
+	}
+	
+	public function substr(int $start, ?int $length = null): static
+	{
+		if (0 === $length || $start >= $this->length()) {
+			return new static('');
+		}
+		
+		$result = new Collection();
+		$index = $start >= 0 ? $start : $this->length() + $start;
+		
+		while (isset($this->chars[$index])) {
+			$result->push($this->chars[$index++]);
+			
+			if ($length && $length > 0 && $result->count() === $length) {
+				return new static($result);
+			}
+		}
+		
+		if ($length < 0) {
+			$result->pop(abs($length));
+		}
+		
+		return new static($result);
 	}
 	
 	public function is(AnsiString|string $other, bool $ignore_style = false): bool
@@ -311,7 +335,7 @@ class AnsiString implements Stringable
 	}
 	
 	/** @return Generator<static[]> */
-	protected function words(): Generator
+	protected function words(?int $max_length): Generator
 	{
 		$sep = new static('');
 		$word = new static('');
@@ -322,6 +346,12 @@ class AnsiString implements Stringable
 				$word = new static('');
 				$sep = new static($char);
 				continue;
+			}
+			
+			if ($max_length && $word->width() >= $max_length) {
+				yield [$sep, $word];
+				$word = new static('');
+				$sep = new static('');
 			}
 			
 			$word->chars->push($char);
